@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>INIntentsSupported</key>
+	<array>
+		<string>Intents</string>
+	</array>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>StartSkippingIntentIntent</string>
+	</array>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>SkipTrack uses Bluetooth to connect to your AirPods for enhanced workout tracking and jump counting.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>SkipTrack uses Bluetooth to connect to your AirPods for enhanced workout tracking and jump counting.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>SkipTrack uses the microphone to detect audio cues from your AirPods during workouts.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>SkipTrack uses motion sensors to automatically count your jump rope jumps during workouts.</string>
+</dict>
+</plist>
