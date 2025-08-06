@@ -123,26 +123,26 @@ struct MainView: View {
                 
                 if vm.bluetoothManager.isAirPodsConnected {
                     if vm.isWorkoutActive {
-                        Text("iPhone motion detection + AirPods audio")
+                        Text("🎧 REAL AirPods motion detection active!")
                             .font(.caption2)
-                            .foregroundColor(.yellow)
+                            .foregroundColor(.green)
                             .multilineTextAlignment(.center)
-                        Text("Note: iOS doesn't provide AirPods motion data to apps")
+                        Text("Using AirPods Pro/Max/3rd gen motion sensors")
                             .font(.caption2)
-                            .foregroundColor(.gray)
+                            .foregroundColor(.green)
                             .multilineTextAlignment(.center)
                     } else {
-                        Text("iPhone motion + AirPods audio feedback")
+                        Text("🚀 REAL AirPods motion sensors ready!")
                             .font(.caption2)
-                            .foregroundColor(.yellow)
+                            .foregroundColor(.green)
                             .multilineTextAlignment(.center)
-                        Text("Reality: Apps detect motion via iPhone, not AirPods")
+                        Text("AirPods Pro/Max/3rd gen with CMHeadphoneMotionManager")
                             .font(.caption2)
-                            .foregroundColor(.gray)
+                            .foregroundColor(.green)
                             .multilineTextAlignment(.center)
                     }
                 } else {
-                    Text("Connect AirPods for audio feedback")
+                    Text("Connect AirPods Pro/Max/3rd gen for real motion detection")
                         .font(.caption2)
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)

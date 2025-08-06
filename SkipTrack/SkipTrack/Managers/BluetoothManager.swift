@@ -17,10 +17,11 @@ class BluetoothManager: NSObject, ObservableObject {
     
     private var centralManager: CBCentralManager!
     private var cancellables = Set<AnyCancellable>()
-    private var motionManager = CMMotionManager()
+    // REAL AirPods motion detection using CMHeadphoneMotionManager!
+    private var headphoneMotionManager = CMHeadphoneMotionManager()
     private var lastJumpTime: TimeInterval = 0
-    private let jumpThreshold: Double = 1.8 // Lower threshold for AirPods motion
-    private let minimumJumpInterval: TimeInterval = 0.2 // Faster detection for AirPods
+    private let jumpThreshold: Double = 2.0 // Real AirPods acceleration threshold
+    private let minimumJumpInterval: TimeInterval = 0.2
     private var startTime: Date?
     
     // AirPods motion detection callback
@@ -237,12 +238,19 @@ class BluetoothManager: NSObject, ObservableObject {
         updateConnectedDevices()
     }
     
-    // MARK: - Realistic Jump Detection with AirPods
-    // NOTE: iOS doesn't allow third-party apps to access AirPods motion sensors
-    // This uses iPhone motion detection while AirPods provide audio feedback
+    // MARK: - REAL AirPods Motion Detection
+    // Using CMHeadphoneMotionManager for actual AirPods Pro/Max/3rd gen motion sensors!
     func startAirPodsJumpDetection() {
         guard isAirPodsConnected else {
             print("AirPods not connected - cannot start jump detection")
+            return
+        }
+        
+        // Check if we have compatible AirPods with motion sensors
+        guard headphoneMotionManager.isDeviceMotionAvailable else {
+            print("AirPods motion sensors not available - requires AirPods Pro/Max/3rd gen")
+            // Fallback to iPhone-based detection for older AirPods
+            startPhoneBasedDetectionWithAirPodsAudio()
             return
         }
         
@@ -250,35 +258,77 @@ class BluetoothManager: NSObject, ObservableObject {
         jumpCount = 0
         startTime = Date()
         
-        // Use iPhone motion detection with AirPods for audio feedback
-        // This is the standard approach since iOS doesn't expose AirPods motion data
-        startPhoneBasedDetectionWithAirPodsAudio()
+        // REAL AirPods motion detection!
+        startRealAirPodsMotionDetection()
         
-        print("Started iPhone-based jump detection with AirPods audio feedback")
+        print("Started REAL AirPods motion detection! 🎧")
+    }
+    
+    private func startRealAirPodsMotionDetection() {
+        // Use the actual AirPods motion sensors
+        headphoneMotionManager.startDeviceMotionUpdates(to: .main) { [weak self] (motionData, error) in
+            guard let self = self, let motion = motionData else {
+                if let error = error {
+                    print("AirPods motion error: \(error)")
+                    // Fallback to iPhone detection
+                    self?.startPhoneBasedDetectionWithAirPodsAudio()
+                }
+                return
+            }
+            self.processAirPodsMotionData(motion)
+        }
+    }
+    
+    private func processAirPodsMotionData(_ motion: CMDeviceMotion) {
+        // Real AirPods accelerometer data!
+        let userAcceleration = motion.userAcceleration
+        
+        // Calculate total acceleration magnitude from AirPods sensors
+        let totalAcceleration = sqrt(
+            userAcceleration.x * userAcceleration.x +
+            userAcceleration.y * userAcceleration.y +
+            userAcceleration.z * userAcceleration.z
+        )
+        
+        let currentTime = Date().timeIntervalSince(startTime ?? Date())
+        
+        // Detect jump from REAL AirPods motion data
+        if totalAcceleration > jumpThreshold && 
+           (currentTime - lastJumpTime) > minimumJumpInterval {
+            
+            DispatchQueue.main.async {
+                self.jumpCount += 1
+                self.lastJumpTime = currentTime
+                self.onJumpDetected?()
+                
+                // Audio feedback through AirPods
+                self.playJumpSound()
+                
+                print("REAL AirPods jump detected! Total: \(self.jumpCount) 🚀")
+            }
+        }
     }
     
     private func startPhoneBasedDetectionWithAirPodsAudio() {
-        if motionManager.isDeviceMotionAvailable {
-            motionManager.deviceMotionUpdateInterval = 0.1 // 10Hz for jump detection
+        // Fallback for non-Pro AirPods or when headphone motion fails
+        let phoneMotionManager = CMMotionManager()
+        
+        if phoneMotionManager.isDeviceMotionAvailable {
+            phoneMotionManager.deviceMotionUpdateInterval = 0.1 // 10Hz for jump detection
             
-            motionManager.startDeviceMotionUpdates(to: .main) { [weak self] (motionData, error) in
+            phoneMotionManager.startDeviceMotionUpdates(to: .main) { [weak self] (motionData, error) in
                 guard let self = self, let motion = motionData else { return }
-                self.processJumpMotionData(motion)
+                self.processPhoneJumpMotionData(motion)
             }
+            
+            print("Using iPhone motion detection with AirPods audio feedback")
         } else {
             print("Device motion not available")
         }
     }
     
-    func stopAirPodsJumpDetection() {
-        isJumpDetectionActive = false
-        motionManager.stopDeviceMotionUpdates()
-        print("Stopped jump detection")
-    }
-    
-    private func processJumpMotionData(_ motion: CMDeviceMotion) {
-        // Standard iPhone-based jump detection
-        // Uses device motion to detect jumping patterns
+    private func processPhoneJumpMotionData(_ motion: CMDeviceMotion) {
+        // iPhone-based jump detection (fallback)
         let userAcceleration = motion.userAcceleration
         
         // Calculate total acceleration magnitude
@@ -302,9 +352,15 @@ class BluetoothManager: NSObject, ObservableObject {
                 // Audio feedback through AirPods (if connected)
                 self.playJumpSound()
                 
-                print("Jump detected! Total: \(self.jumpCount)")
+                print("Phone-based jump detected! Total: \(self.jumpCount)")
             }
         }
+    }
+    
+    func stopAirPodsJumpDetection() {
+        isJumpDetectionActive = false
+        headphoneMotionManager.stopDeviceMotionUpdates()
+        print("Stopped AirPods motion detection")
     }
     
     private func playJumpSound() {
@@ -325,11 +381,12 @@ class BluetoothManager: NSObject, ObservableObject {
         let currentTime = Date().timeIntervalSince(startTime ?? Date())
         
         // Prevent too rapid manual taps
-        if (currentTime - lastValidJumpTime) > 0.3 {
+        if (currentTime - lastJumpTime) > 0.3 {
             DispatchQueue.main.async {
                 self.jumpCount += 1
-                self.lastValidJumpTime = currentTime
+                self.lastJumpTime = currentTime
                 self.onJumpDetected?()
+                self.playJumpSound()
                 print("Manual jump detected! Total: \(self.jumpCount)")
             }
         }

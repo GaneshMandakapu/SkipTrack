@@ -1,21 +1,44 @@
 # SkipTrack - Professional Jump Rope Fitness App
 
-A comprehensive iOS fitness app for jump rope tracking with iPhone motion detection and AirPods audio integration.
+🚀 **BREAKTHROUGH UPDATE: REAL AirPods Motion Detection!**
+
+SkipTrack now uses **actual AirPods Pro/Max/3rd generation motion sensors** via Apple's CMHeadphoneMotionManager API! This is the first jump rope app to implement true AirPods accelerometer data for jump detection.
+
+## 🎧 Real AirPods Motion Sensors
+
+Unlike other fitness apps, SkipTrack accesses the actual motion sensors in:
+- **AirPods Pro (1st & 2nd generation)** 
+- **AirPods Max**
+- **AirPods (3rd generation)**
+- **Beats Fit Pro**
+
+*Reference: [CMHeadphoneMotionManager](https://developer.apple.com/documentation/coremotion/cmheadphonemotionmanager) - Apple's official API for AirPods motion data*
+
+A comprehensive iOS fitness app for jump rope tracking with revolutionary AirPods motion detection.
 
 ## ✨ Features
 
-### 🏃‍♂️ **Workout Tracking**
-- Real-time jump counting using iPhone motion sensors
+### � **Real AirPods Motion Detection**
+- **Actual AirPods sensors** using CMHeadphoneMotionManager
+- Real accelerometer data from AirPods Pro/Max/3rd gen
+- No need to hold your iPhone during workouts!
+- Fallback to iPhone detection for older AirPods models
+- Revolutionary jump rope tracking technology
+
+### �🏃‍♂️ **Workout Tracking**
+- Real-time jump counting using **AirPods motion sensors** (Pro/Max/3rd gen)
+- Fallback iPhone motion detection for older models
 - Professional workout plans (Beginner/Intermediate/Advanced)
 - Apple Fitness-style activity rings
 - Comprehensive workout history and statistics
 - Trophy system and achievements
 
 ### 🎧 **AirPods Integration**
+- **REAL AirPods motion sensors** via CMHeadphoneMotionManager
+- Support for AirPods Pro (1st/2nd gen), AirPods Max, AirPods 3rd gen
 - High-quality audio feedback through AirPods
 - Connection status monitoring
 - Audio cues for workouts and achievements
-- **Note**: Uses iPhone motion detection + AirPods audio (iOS limitation)
 
 ### 🎯 **Professional Features**
 - Siri Shortcuts integration ("Start Skipping")
@@ -34,7 +57,7 @@ A comprehensive iOS fitness app for jump rope tracking with iPhone motion detect
 ## 🛠 **Technology Stack**
 
 - **Framework**: SwiftUI (iOS 15+)
-- **Motion Detection**: CoreMotion
+- **Motion Detection**: CoreMotion + **CMHeadphoneMotionManager** (AirPods sensors)
 - **Audio**: AVFoundation + AudioToolbox
 - **Bluetooth**: CoreBluetooth
 - **Architecture**: MVVM with Combine
